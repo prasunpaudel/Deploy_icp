@@ -8,8 +8,7 @@
                     `<span style="color: #2b8a3e;">Model loaded successfully!</span>`;
                 console.log('Model input shape:', model.inputs[0].shape);
             } catch (err) {
-                document.getElementById('result').innerHTML = 
-                    `<span style="color: #c92a2a;">Error loading model: ${err.message}</span>`;
+               
                 console.error('Model loading failed:', err);
             }
         }
@@ -35,11 +34,7 @@
                 const prediction = (await outputTensor.data())[0];
 
                 document.getElementById('result').innerHTML = `
-                    <div style="margin-bottom: 0.5rem;">Input values:</div>
-                    <div style="display: flex; gap: 1.5rem; color: #495057;">
-                        <div>X1: ${x1.toFixed(2)}</div>
-                        <div>X2: ${x2.toFixed(2)}</div>
-                    </div>
+                   
                     <div style="margin-top: 1rem; font-weight: 500; color: #1864ab;">
                         Predicted output: ${prediction.toFixed(2)}
                     </div>
@@ -50,7 +45,7 @@
                 outputTensor.dispose();
             } catch (err) {
                 document.getElementById('result').innerHTML = 
-                    `<span style="color: #c92a2a;">Prediction error: ${err.message}</span>`;
+                  
                 console.error('Prediction failed:', err);
             }
         }
