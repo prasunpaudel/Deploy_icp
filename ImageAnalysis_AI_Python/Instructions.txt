@@ -1,0 +1,12 @@
+You upload a food image.
+
+Gemini analyzes the image and clearly identifies the food item, if possible.
+
+It estimates the calorie content and includes a confidence level (High, Medium, or Low).
+
+It lists three key nutritional facts, such as fat content, fiber, or sugar levels.
+
+It gives a short summary in under 20 words.
+
+If the food can't be confidently identified, it clearly says so without guessing.
+
