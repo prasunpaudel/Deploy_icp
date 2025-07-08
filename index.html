@@ -10,13 +10,13 @@
   <p>Click the button to start conversation!</p>
 
   <script>
-    let vapiInstance = null;
-    const API_KEY = "a78c5cb1-8b4c-4ac2-8a0b-bace69d8fbaa";
-    const ASSISTANT_NAME = "Sarthak";
+
+  var vapiInstance = null;
+  const ASSISTANT_NAME = "Sarthak";
 const ASSISTANT_ROLE = "AI assistant providing personalized services";
 
 // Configuration
-const assistantConfig = {
+const assistant = {
   model: {
     provider: "openai",
     model: "gpt-3.5-turbo-0613",
@@ -64,128 +64,28 @@ const assistantConfig = {
   },
   firstMessage: "Hi! I'm your personal assistant trained by Sarthak Aganja. Let's start with your name - what should I call you?"
 };
- const buttonConfig = {
-      color: "#3B82F6",
-      position: "bottom-right",
-      textColor: "#FFFFFF"
+  const apiKey = "a78c5cb1-8b4c-4ac2-8a0b-bace69d8fbaa"; // Substitute with your Public key from Vapi Dashboard.
+  const buttonConfig = {}; // Modify this as required
+
+  (function (d, t) {
+    var g = document.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    g.src =
+      "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+    g.defer = true;
+    g.async = true;
+    s.parentNode.insertBefore(g, s);
+
+    g.onload = function () {
+      vapiInstance = window.vapiSDK.run({
+        apiKey: apiKey, // mandatory
+        assistant: assistant, // mandatory
+        config: buttonConfig, // optional
+      });
     };
+  })(document, "script");
 
-    // API Service Functions
-    async function saveUserData(userInfo) {
-      try {
-        const response = await fetch("https://your-user-api.com/save", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-API-Key": "your_user_api_key"
-          },
-          body: JSON.stringify(userInfo)
-        });
-        return await response.json();
-      } catch (error) {
-        console.error("User API Error:", error);
-        throw error;
-      }
-    }
 
-    async function getWeatherData(location) {
-      try {
-        const response = await fetch("https://your-weather-api.com/current", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ location })
-        });
-        return await response.json();
-      } catch (error) {
-        console.error("Weather API Error:", error);
-        throw error;
-      }
-    }
-
-    // Initialize Vapi
-    (function(d, t) {
-      const script = d.createElement(t);
-      const firstScript = d.getElementsByTagName(t)[0];
-      script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
-      script.defer = true;
-      script.async = true;
-      firstScript.parentNode.insertBefore(script, firstScript);
-
-      script.onload = function() {
-        try {
-          vapiInstance = window.vapiSDK.run({
-            apiKey: API_KEY,
-            assistant: assistantConfig,
-            config: buttonConfig
-          });
-
-          // Function Call Handler
-          vapiInstance.on('function_call', async (funcCall) => {
-            console.log(`⚡ Function Call: ${funcCall.name}`);
-            
-            try {
-              switch(funcCall.name) {
-                case 'saveUserInfo':
-                  const userData = JSON.parse(funcCall.arguments);
-                  console.log('📝 User Data:', userData);
-                  
-                  // Save to User API
-                  const saveResult = await saveUserData(userData);
-                  console.log('✅ Save Result:', saveResult);
-                  
-                  vapiInstance.callFunction({
-                    name: 'saveUserInfo',
-                    arguments: userData
-                  });
-                  break;
-
-                case 'get_weather':
-                  const { location } = JSON.parse(funcCall.arguments);
-                  console.log('🌤️ Weather Request:', location);
-                  
-                  // Get Weather Data
-                  const weather = await getWeatherData(location);
-                  console.log('☀️ Weather Response:', weather);
-                  
-                  vapiInstance.callFunction({
-                    name: 'get_weather',
-                    arguments: {
-                      location,
-                      temperature: weather.temp,
-                      conditions: weather.description
-                    }
-                  });
-                  break;
-              }
-            } catch (error) {
-              console.error('⚠️ Function Error:', error);
-            }
-          });
-
-          // Event Listeners
-          vapiInstance.on('error', (error) => {
-            console.error('❌ Vapi Error:', error);
-          });
-
-          vapiInstance.on('call-start', () => {
-            console.log('📞 Call Started');
-          });
-
-          vapiInstance.on('call-end', () => {
-            console.log('📴 Call Ended');
-          });
-
-        } catch (initError) {
-          console.error('❌ Initialization Failed:', initError);
-        }
-      };
-
-      script.onerror = () => {
-        console.error('❌ Failed to Load Vapi SDK');
-      };
-    })(document, "script");
   </script>
 </body>
 </html>
