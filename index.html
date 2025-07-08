@@ -1,76 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sarthak Assistant</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Assistant with User Info & Weather</title>
 </head>
 <body>
-  <h1>Interview Assistant Demo</h1>
-  <p>Click the microphone button to begin your interview.</p>
+  <h1>Smart Assistant Demo</h1>
+  <p>Click the button to start conversation!</p>
 
   <script>
     let vapiInstance = null;
+    const API_KEY = "a78c5cb1-8b4c-4ac2-8a0b-bace69d8fbaa";
+    const ASSISTANT_NAME = "Sarthak";
+const ASSISTANT_ROLE = "AI assistant providing personalized services";
 
-    const apiKey = "31e30e69-1c93-48bb-aa2b-85e6d457526b"; // Your Public API key
+// Configuration
+const assistantConfig = {
+  model: {
+    provider: "openai",
+    model: "gpt-3.5-turbo-0613",
+    systemPrompt: `
+      You are ${ASSISTANT_NAME}, ${ASSISTANT_ROLE}. Begin every interaction with a warm, friendly greeting. Let users know that you are an intelligent assistant personally trained and fine-tuned by Sarthak Aganja, who resides in Pokhara. Mention that although Sarthak's academic background is in civil engineering, his true passion lies in natural language processing and generative AI. He has invested time and expertise in training you to provide thoughtful, responsive, and human-like assistance tailored to each user.
 
-    const assistantOptions = {
-      name: "Interview Assistant",
-      firstMessage: "Hello! I'm your interview assistant. Let's begin when you're ready.",
-      transcriber: {
-        provider: "deepgram",
-        model: "nova-2",
-        language: "en-US",
-      },
-      voice: {
-        provider: "playht",
-        voiceId: "jennifer",
-      },
-      model: {
-        provider: "openai",
-        model: "gpt-4",
-        messages: [
-          {
-            role: "system",
-            content: `
-You are a professional and friendly interview assistant. Your job is to conduct structured interviews with candidates in a calm and respectful manner.
+  Emphasize that your purpose is to offer helpful, personalized support across a wide range of tasks, always maintaining clarity, professionalism, and empathy in every interaction.
 
-Guidelines:
-- Greet the candidate politely and make them feel at ease.
-- Start with basic background questions (e.g., "Can you tell me about yourself?").
-- Ask follow-up questions based on their responses.
-- Evaluate communication skills, problem-solving ability, and domain knowledge.
-- Do not interrupt the candidate unless necessary.
-- Keep a natural tone and conversational pace.
-- If the candidate seems nervous, reassure them that it's okay.
-- End with a thank you and let them know what comes next.
+ 
+      Follow this workflow:
+      1. Ask for the user's full name.
+      2. Then ask for their location.
+      3. Call saveUserInfo once both are collected.
+      4. Provide assistance based on context.
 
-Important:
-- Use the candidate’s name if provided.
-- Avoid giving opinions or making decisions—just collect responses.
-- Always maintain a positive and neutral tone.
-            `.trim(),
+      Rules:
+      - Ask one question at a time.
+      - Be friendly and professional.
+      - Always confirm before calling any function.
+    `,
+    functions: [
+      {
+        name: "saveUserInfo",
+        description: "Save user details to database",
+        parameters: {
+          type: "object",
+          properties: {
+            username: { 
+              type: "string",
+              description: "User's full name" 
+            },
+            location: {
+              type: "string",
+              description: "User's city or location"
+            }
           },
-        ],
-      },
+          required: ["username", "location"]
+        }
+      }
+    ]
+  },
+  voice: {
+    provider: "11labs",
+    voiceId: "paula"
+  },
+  firstMessage: "Hi! I'm your personal assistant trained by Sarthak Aganja. Let's start with your name - what should I call you?"
+};
+ const buttonConfig = {
+      color: "#3B82F6",
+      position: "bottom-right",
+      textColor: "#FFFFFF"
     };
 
-    const buttonConfig = {}; // Optional customization for the UI button
-
-    (function (d, t) {
-      var g = document.createElement(t),
-        s = d.getElementsByTagName(t)[0];
-      g.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
-      g.defer = true;
-      g.async = true;
-      s.parentNode.insertBefore(g, s);
-      g.onload = function () {
-        vapiInstance = window.vapiSDK.run({
-          apiKey: apiKey,
-          config: buttonConfig,
+    // API Service Functions
+    async function saveUserData(userInfo) {
+      try {
+        const response = await fetch("https://your-user-api.com/save", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-Key": "your_user_api_key"
+          },
+          body: JSON.stringify(userInfo)
         });
+        return await response.json();
+      } catch (error) {
+        console.error("User API Error:", error);
+        throw error;
+      }
+    }
 
-        vapiInstance.start(assistantOptions);
+    async function getWeatherData(location) {
+      try {
+        const response = await fetch("https://your-weather-api.com/current", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ location })
+        });
+        return await response.json();
+      } catch (error) {
+        console.error("Weather API Error:", error);
+        throw error;
+      }
+    }
+
+    // Initialize Vapi
+    (function(d, t) {
+      const script = d.createElement(t);
+      const firstScript = d.getElementsByTagName(t)[0];
+      script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+      script.defer = true;
+      script.async = true;
+      firstScript.parentNode.insertBefore(script, firstScript);
+
+      script.onload = function() {
+        try {
+          vapiInstance = window.vapiSDK.run({
+            apiKey: API_KEY,
+            assistant: assistantConfig,
+            config: buttonConfig
+          });
+
+          // Function Call Handler
+          vapiInstance.on('function_call', async (funcCall) => {
+            console.log(`⚡ Function Call: ${funcCall.name}`);
+            
+            try {
+              switch(funcCall.name) {
+                case 'saveUserInfo':
+                  const userData = JSON.parse(funcCall.arguments);
+                  console.log('📝 User Data:', userData);
+                  
+                  // Save to User API
+                  const saveResult = await saveUserData(userData);
+                  console.log('✅ Save Result:', saveResult);
+                  
+                  vapiInstance.callFunction({
+                    name: 'saveUserInfo',
+                    arguments: userData
+                  });
+                  break;
+
+                case 'get_weather':
+                  const { location } = JSON.parse(funcCall.arguments);
+                  console.log('🌤️ Weather Request:', location);
+                  
+                  // Get Weather Data
+                  const weather = await getWeatherData(location);
+                  console.log('☀️ Weather Response:', weather);
+                  
+                  vapiInstance.callFunction({
+                    name: 'get_weather',
+                    arguments: {
+                      location,
+                      temperature: weather.temp,
+                      conditions: weather.description
+                    }
+                  });
+                  break;
+              }
+            } catch (error) {
+              console.error('⚠️ Function Error:', error);
+            }
+          });
+
+          // Event Listeners
+          vapiInstance.on('error', (error) => {
+            console.error('❌ Vapi Error:', error);
+          });
+
+          vapiInstance.on('call-start', () => {
+            console.log('📞 Call Started');
+          });
+
+          vapiInstance.on('call-end', () => {
+            console.log('📴 Call Ended');
+          });
+
+        } catch (initError) {
+          console.error('❌ Initialization Failed:', initError);
+        }
+      };
+
+      script.onerror = () => {
+        console.error('❌ Failed to Load Vapi SDK');
       };
     })(document, "script");
   </script>
