@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sarthak Assistant</title>
+</head>
+<body>
+  <h1>Interview Assistant Demo</h1>
+  <p>Click the microphone button to begin your interview.</p>
+
+  <script>
+    let vapiInstance = null;
+
+    const apiKey = "31e30e69-1c93-48bb-aa2b-85e6d457526b"; // Your Public API key
+
+    const assistantOptions = {
+      name: "Interview Assistant",
+      firstMessage: "Hello! I'm your interview assistant. Let's begin when you're ready.",
+      transcriber: {
+        provider: "deepgram",
+        model: "nova-2",
+        language: "en-US",
+      },
+      voice: {
+        provider: "playht",
+        voiceId: "jennifer",
+      },
+      model: {
+        provider: "openai",
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: `
+You are a professional and friendly interview assistant. Your job is to conduct structured interviews with candidates in a calm and respectful manner.
+
+Guidelines:
+- Greet the candidate politely and make them feel at ease.
+- Start with basic background questions (e.g., "Can you tell me about yourself?").
+- Ask follow-up questions based on their responses.
+- Evaluate communication skills, problem-solving ability, and domain knowledge.
+- Do not interrupt the candidate unless necessary.
+- Keep a natural tone and conversational pace.
+- If the candidate seems nervous, reassure them that it's okay.
+- End with a thank you and let them know what comes next.
+
+Important:
+- Use the candidate’s name if provided.
+- Avoid giving opinions or making decisions—just collect responses.
+- Always maintain a positive and neutral tone.
+            `.trim(),
+          },
+        ],
+      },
+    };
+
+    const buttonConfig = {}; // Optional customization for the UI button
+
+    (function (d, t) {
+      var g = document.createElement(t),
+        s = d.getElementsByTagName(t)[0];
+      g.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+      g.defer = true;
+      g.async = true;
+      s.parentNode.insertBefore(g, s);
+      g.onload = function () {
+        vapiInstance = window.vapiSDK.run({
+          apiKey: apiKey,
+          config: buttonConfig,
+        });
+
+        vapiInstance.start(assistantOptions);
+      };
+    })(document, "script");
+  </script>
+</body>
+</html>
