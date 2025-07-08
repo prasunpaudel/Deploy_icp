@@ -64,7 +64,7 @@ const assistant = {
   },
   firstMessage: "Hi! I'm your personal assistant trained by Sarthak Aganja. Let's start with your name - what should I call you?"
 };
-  const apiKey = "a78c5cb1-8b4c-4ac2-8a0b-bace69d8fbaa"; // Substitute with your Public key from Vapi Dashboard.
+  const apiKey = ""; 
   const buttonConfig = {}; // Modify this as required
 
   (function (d, t) {
@@ -78,9 +78,9 @@ const assistant = {
 
     g.onload = function () {
       vapiInstance = window.vapiSDK.run({
-        apiKey: apiKey, // mandatory
-        assistant: assistant, // mandatory
-        config: buttonConfig, // optional
+        apiKey: apiKey, // comp
+        assistant: assistant, //comp
+        config: buttonConfig, // opt
       });
     };
   })(document, "script");
