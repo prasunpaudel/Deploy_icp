@@ -10,62 +10,10 @@
   <p>Click the button to start conversation!</p>
 
   <script>
-
   var vapiInstance = null;
-  const ASSISTANT_NAME = "Sarthak";
-const ASSISTANT_ROLE = "AI assistant providing personalized services";
-
-// Configuration
-const assistant = {
-  model: {
-    provider: "openai",
-    model: "gpt-3.5-turbo-0613",
-    systemPrompt: `
-      You are ${ASSISTANT_NAME}, ${ASSISTANT_ROLE}. Begin every interaction with a warm, friendly greeting. Let users know that you are an intelligent assistant personally trained and fine-tuned by Sarthak Aganja, who resides in Pokhara. Mention that although Sarthak's academic background is in civil engineering, his true passion lies in natural language processing and generative AI. He has invested time and expertise in training you to provide thoughtful, responsive, and human-like assistance tailored to each user.
-
-  Emphasize that your purpose is to offer helpful, personalized support across a wide range of tasks, always maintaining clarity, professionalism, and empathy in every interaction.
-
- 
-      Follow this workflow:
-      1. Ask for the user's full name.
-      2. Then ask for their location.
-      3. Call saveUserInfo once both are collected.
-      4. Provide assistance based on context.
-
-      Rules:
-      - Ask one question at a time.
-      - Be friendly and professional.
-      - Always confirm before calling any function.
-    `,
-    functions: [
-      {
-        name: "saveUserInfo",
-        description: "Save user details to database",
-        parameters: {
-          type: "object",
-          properties: {
-            username: { 
-              type: "string",
-              description: "User's full name" 
-            },
-            location: {
-              type: "string",
-              description: "User's city or location"
-            }
-          },
-          required: ["username", "location"]
-        }
-      }
-    ]
-  },
-  voice: {
-    provider: "11labs",
-    voiceId: "paula"
-  },
-  firstMessage: "Hi! I'm your personal assistant trained by Sarthak Aganja. Let's start with your name - what should I call you?"
-};
-  const apiKey = ""; 
-  const buttonConfig = {}; // Modify this as required
+  const assistant = "b4fb045c-2b2b-482f-b121-79e46a1721c9"; 
+  const apiKey = "063f65bf-5c8e-42a5-8d18-8e4b612ea7fd"; 
+  const buttonConfig = {}; 
 
   (function (d, t) {
     var g = document.createElement(t),
@@ -78,14 +26,12 @@ const assistant = {
 
     g.onload = function () {
       vapiInstance = window.vapiSDK.run({
-        apiKey: apiKey, // comp
-        assistant: assistant, //comp
-        config: buttonConfig, // opt
+        apiKey: apiKey, 
+        assistant: assistant, 
+        config: buttonConfig, 
       });
     };
   })(document, "script");
-
-
   </script>
 </body>
 </html>
